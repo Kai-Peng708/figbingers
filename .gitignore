@@ -122,4 +122,6 @@ fabric.properties
 
 # Virtual Environment venv
 venv/
+
+.idea/
 # End of https://www.toptal.com/developers/gitignore/api/pycharm,linux
