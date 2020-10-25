@@ -6,19 +6,28 @@ pyg.theme('DarkAmber')
 layout = [[pyg.Text('Text Entry:'), pyg.Text(size=(100, 1), key='-OUTPUT-')],
           [pyg.Text('Word Count:'), pyg.Text(size=(3,1), key='-WORDCOUNT-')],
           [pyg.Input(key='-IN-')],
-          [pyg.Button('Count'), pyg.Button('Exit')]]
+          [pyg.Button('A'), pyg.Button('E'), pyg.Button('I'), pyg.Button('O'), pyg.Button('U'), pyg.Button(' ')],
+          [pyg.Button('Enter'), pyg.Button('Clear'), pyg.Button('Exit')]]
 
 window = pyg.Window('Display', layout)
 
+text_entered = ''
 while True:
     event, values = window.read()
     print(event, values)
-    window['-OUTPUT-'].update(values['-IN-'])
     if event == pyg.WIN_CLOSED or event == 'Exit':
         break
-    if event == 'Count':
+    if event == 'Clear':
+        text_entered = ''
+    if event in 'AEIOU ':
+        text_entered = values['-IN-']
+        text_entered += event
+    if event == 'Enter':
+        text_entered = values['-IN-']
+        window['-OUTPUT-'].update(text_entered)
         window['-WORDCOUNT-'].update(len(values['-IN-'].split()))
-        # window['-OUTPUT-'].update(values['-IN-'])
+
+    window['-IN-'].update(text_entered)
 
 window.close()
 
