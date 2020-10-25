@@ -5,7 +5,7 @@ class Gesture:
     def __init__(self):
         self.state = 0
         # vowels
-        self.state0dict = {'SW': 'u', 'SE': 'a', 'S': 'e', 'NW': '', 'N': 'i', 'NE': 'o'}
+        self.state0dict = {'SW': 'u', 'SE': 'a', 'S': 'e', 'NW': ' ', 'N': 'i', 'NE': 'o'}
         # rest of letters
         self.state1dict = {'SW': 'h', 'SE': 'n', 'S': 't', 'NW': 'd', 'N': 'r', 'NE': 's'}
         self.state2dict = {'SW': 'y', 'SE': 'c', 'S': 'l', 'NW': 'w', 'N': 'f', 'NE': 'm'}
@@ -43,10 +43,17 @@ class Gesture:
     def swipeTrigger(self, start, end):
         # This function defines mapping from swiping to letters
         swipe_command = self.swipeDetect(start, end)
-        if swipe_command in self.state_map.keys():
+
+        if swipe_command is None:
+            print('the fuck is this')
+        elif swipe_command in self.state_map.keys():
             self.state = self.state_map[swipe_command]
         else:
-            return self.list_dict[self.state][swipe_command]
+            output = self.list_dict[self.state][swipe_command]
+            self.state = 0
+            return output
+
+        return
 
 
 def analyseGesture(input_segment, graph_size):
@@ -99,6 +106,9 @@ def main():
     # ---===--- Loop taking in user input --- #
     dragging = False
     start_point = end_point = prior_rect = None
+
+    gesture = Gesture()
+
     while True:
         # this block processes the motion
         event, values = window.read()
@@ -128,6 +138,13 @@ def main():
             # return the segments
             output_gesture = analyseGesture(gesture_segment, graph_size)
             print("start", output_gesture[0], "end", output_gesture[1])
+
+            output_string = gesture.swipeTrigger(output_gesture[0], output_gesture[1])
+
+            if output_string is None:
+                continue
+            else:
+                print("this shit is cray cray ", output_string)
 
         # Gesture.swipeDetect(output_gesture[0], output_gesture[1])
     window.close()
