@@ -1,32 +1,80 @@
 import PySimpleGUI as sg
 
 
+class Gesture:
+    def __init__(self):
+        self.state = 0
+        # vowels
+        self.state0dict = {'SW': 'u', 'SE': 'a', 'S': 'e', 'NW': '', 'N': 'i', 'NE': 'o'}
+        # rest of letters
+        self.state1dict = {'SW': 'h', 'SE': 'n', 'S': 't', 'NW': 'd', 'N': 'r', 'NE': 's'}
+        self.state2dict = {'SW': 'y', 'SE': 'c', 'S': 'l', 'NW': 'w', 'N': 'f', 'NE': 'm'}
+        self.state3dict = {'SW': 'k', 'SE': 'p', 'S': 'g', 'NW': 'x', 'N': 'e', 'NE': 'b'}
+        self.state4dict = {'SW': ',', 'SE': 'j', 'S': 'q', 'NW': ':', 'N': '\'', 'NE': 'z'}
+        self.list_dict = [self.state0dict, self.state1dict, self.state2dict, self.state3dict, self.state4dict]
+        self.state_map = {'DL': 2, 'UL': 1, 'DR': 4, 'UR': 3}
+
+    def swipeDetect(self, start, end):
+        # This function defines swiping patterns from starting and ending point
+        if start == 4:
+            if end == 0:
+                return "SW"
+            if end == 1:
+                return "S"
+            if end == 2:
+                return "SE"
+            if end == 6:
+                return "NW"
+            if end == 7:
+                return "N"
+            if end == 8:
+                return "NE"
+        elif start == 6 and end == 4:
+            return "DR"
+        elif start == 0 and end == 4:
+            return "UR"
+        elif start == 8 and end == 4:
+            return "DL"
+        elif start == 2 and end == 4:
+            return "UL"
+        else:
+            return
+
+    def swipeTrigger(self, start, end):
+        # This function defines mapping from swiping to letters
+        swipe_command = self.swipeDetect(start, end)
+        if swipe_command in self.state_map.keys():
+            self.state = self.state_map[swipe_command]
+        else:
+            return self.list_dict[self.state][swipe_command]
+
+
 def analyseGesture(input_segment, graph_size):
     return getSegment(input_segment[0], graph_size), getSegment(input_segment[1], graph_size)
 
 
 def getSegment(point_coordinate, graph_size):
     x, y = point_coordinate
-    if x < graph_size[0]/3.0:
+    if x < graph_size[0] / 3.0:
         # on the left side
-        if y < graph_size[1]/3.0:
+        if y < graph_size[1] / 3.0:
             return 0
-        elif y < graph_size[1]/3.0*2.0:
+        elif y < graph_size[1] / 3.0 * 2.0:
             return 3
         else:
             return 6
-    elif x < graph_size[0]/3.0*2.0:
+    elif x < graph_size[0] / 3.0 * 2.0:
         # in the middle
-        if y < graph_size[1]/3.0:
+        if y < graph_size[1] / 3.0:
             return 1
-        elif y < graph_size[1]/3.0*2.0:
+        elif y < graph_size[1] / 3.0 * 2.0:
             return 4
         else:
             return 7
     else:
-        if y < graph_size[1]/3.0:
+        if y < graph_size[1] / 3.0:
             return 2
-        elif y < graph_size[1]/3.0*2.0:
+        elif y < graph_size[1] / 3.0 * 2.0:
             return 5
         else:
             return 8
@@ -40,7 +88,7 @@ def main():
     # w, h = sg.Window.get_screen_size()
 
     screen_size = (50, 50)
-    graph_size = (100, 100)
+    graph_size = (800, 800)
     layout = [[sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
                         enable_events=True, drag_submits=True, key="-GRAPH-", change_submits=True,
                         background_color='lightblue')]]
@@ -80,6 +128,9 @@ def main():
             # return the segments
             output_gesture = analyseGesture(gesture_segment, graph_size)
             print("start", output_gesture[0], "end", output_gesture[1])
+
+        # Gesture.swipeDetect(output_gesture[0], output_gesture[1])
     window.close()
+
 
 main()
