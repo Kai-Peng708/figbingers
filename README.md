@@ -1,6 +1,6 @@
 # figbingers
 Text entry technique with small screens  
-"It's not about the size of your cursor, it's about the motion of the ocean." -- Rocky Wang
+"It's not about the size of your cursor, it's about the ocean of the motion." -- Rocky Wang
 
 
 ## Gesture Summary
