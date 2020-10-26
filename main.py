@@ -5,7 +5,7 @@ class Gesture:
     def __init__(self):
         self.state = 0
         # vowels
-        self.state0dict = {'SW': 'u', 'SE': 'a', 'S': 'e', 'NW': ' ', 'N': 'i', 'NE': 'o'}
+        self.state0dict = {'SW': 'u', 'SE': 'a', 'S': 'e', 'NW': 'i', 'N': 'CAP', 'NE': 'o'}
         # rest of letters
         self.state1dict = {'SW': 'h', 'SE': 'n', 'S': 't', 'NW': 'd', 'N': 'r', 'NE': 's'}
         self.state2dict = {'SW': 'y', 'SE': 'c', 'S': 'l', 'NW': 'w', 'N': 'f', 'NE': 'm'}
@@ -16,6 +16,9 @@ class Gesture:
 
     def swipeDetect(self, start, end):
         # This function defines swiping patterns from starting and ending point
+        if start is end:
+            return "Tap"
+
         if start == 4:
             if end == 0:
                 return "SW"
@@ -37,6 +40,8 @@ class Gesture:
             return "DL"
         elif start == 2 and end == 4:
             return "UL"
+        elif (start == 8 and end == 6) or (start == 5 and end == 3) or (start == 2 and end == 0):
+            return "L"
         else:
             return
 
@@ -48,6 +53,10 @@ class Gesture:
             print('the fuck is this')
         elif swipe_command in self.state_map.keys():
             self.state = self.state_map[swipe_command]
+        elif swipe_command == "L":
+            return "DEL"
+        elif swipe_command == "Tap":
+            return " "
         else:
             output = self.list_dict[self.state][swipe_command]
             self.state = 0
@@ -96,7 +105,9 @@ def main():
 
     screen_size = (50, 50)
     graph_size = (800, 800)
-    layout = [[sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
+    layout = [[sg.Text('Text Entry:'), sg.Text(size=(150, 1), key='-OUTPUT-')],
+              [sg.Text('Word Count:'), sg.Text(size=(3,1), key='-WORDCOUNT-')],
+              [sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
                         enable_events=True, drag_submits=True, key="-GRAPH-", change_submits=True,
                         background_color='lightblue')]]
 
@@ -112,6 +123,8 @@ def main():
 
     gesture = Gesture()
 
+    text_entered = ''
+    cap_state = False
     while True:
         # this block processes the motion
         event, values = window.read()
@@ -149,9 +162,20 @@ def main():
 
             if output_string is None:
                 continue
+            elif output_string == 'CAP':
+                cap_state = True
+            elif output_string == 'DEL':
+                if text_entered == '':
+                    continue
+                else:
+                    text_entered = text_entered[:-1]
             else:
-                print("this shit is cray cray ", output_string)
-
+                if not cap_state:
+                    text_entered += output_string
+                else:
+                    text_entered += output_string.upper()
+                    cap_state = False
+        window['-OUTPUT-'].update(text_entered)
         # Gesture.swipeDetect(output_gesture[0], output_gesture[1])
     window.close()
 
