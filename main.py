@@ -115,7 +115,7 @@ def main():
     window.finalize()
     graph = window["-GRAPH-"]
 
-    graph.DrawImage(filename="state0.PNG", location=(0, graph_size[1]))
+    graph.DrawImage(filename="state0.png", location=(0, graph_size[1]))
 
     # ---===--- Loop taking in user input --- #
     dragging = False
@@ -124,10 +124,12 @@ def main():
     gesture = Gesture()
 
     text_entered = ''
+    tail = '.png'
     cap_state = False
     while True:
         # this block processes the motion
         event, values = window.read()
+        tail = '.PNG' if cap_state else '.png'
         if event is None:
             break
         if event == "-GRAPH-":
@@ -157,7 +159,7 @@ def main():
 
             output_string = gesture.swipeTrigger(output_gesture[0], output_gesture[1])
 
-            state_png_name = "state" + str(gesture.state) + ".PNG"
+            state_png_name = "state" + str(gesture.state) + tail
             graph.DrawImage(filename=state_png_name, location=(0, graph_size[1]))
 
             if output_string is None:
