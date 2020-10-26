@@ -101,7 +101,10 @@ def main():
                         background_color='lightblue')]]
 
     window = sg.Window(title="User Input", layout=layout)
+    window.finalize()
     graph = window["-GRAPH-"]
+
+    graph.DrawImage(filename="state0.PNG", location=(0, graph_size[1]))
 
     # ---===--- Loop taking in user input --- #
     dragging = False
@@ -140,6 +143,9 @@ def main():
             print("start", output_gesture[0], "end", output_gesture[1])
 
             output_string = gesture.swipeTrigger(output_gesture[0], output_gesture[1])
+
+            state_png_name = "state" + str(gesture.state) + ".PNG"
+            graph.DrawImage(filename=state_png_name, location=(0, graph_size[1]))
 
             if output_string is None:
                 continue
