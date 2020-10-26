@@ -56,8 +56,10 @@ class Gesture:
             self.state = self.state_map[swipe_command]
         elif swipe_command == "L":
             return "DEL"
-        elif swipe_command == "Tap":
+        elif swipe_command == "Tap" and self.state == 0:
             return " "
+        elif self.state is not 0 and swipe_command == "Tap":
+            self.state = 0
         elif self.list_dict[self.state][swipe_command] == 'CAP':
             self.use_caps = True
         else:
