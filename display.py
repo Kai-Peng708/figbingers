@@ -1,5 +1,6 @@
 import PySimpleGUI as pyg
 
+## This is the display that shows the texts we input
 pyg.theme('DarkAmber')
 # Stuff inside your window
 
