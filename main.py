@@ -4,6 +4,7 @@ import PySimpleGUI as sg
 class Gesture:
     def __init__(self):
         self.state = 0
+        self.use_caps = False
         # vowels
         self.state0dict = {'SW': 'u', 'SE': 'a', 'S': 'e', 'NW': 'i', 'N': 'CAP', 'NE': 'o'}
         # rest of letters
@@ -57,9 +58,14 @@ class Gesture:
             return "DEL"
         elif swipe_command == "Tap":
             return " "
+        elif self.list_dict[self.state][swipe_command] == 'CAP':
+            self.use_caps = True
         else:
             output = self.list_dict[self.state][swipe_command]
             self.state = 0
+            if self.use_caps is True:
+                output = output.upper()
+            self.use_caps = False
             return output
 
         return
@@ -125,7 +131,7 @@ def main():
 
     text_entered = ''
     tail = '.png'
-    cap_state = False
+
     while True:
         # this block processes the motion
         event, values = window.read()
@@ -159,27 +165,21 @@ def main():
 
             output_string = gesture.swipeTrigger(output_gesture[0], output_gesture[1])
 
-
+            tail = '.PNG' if gesture.use_caps else '.png'
+            state_png_name = "state" + str(gesture.state) + tail
+            graph.DrawImage(filename=state_png_name, location=(0, graph_size[1]))
 
             if output_string is None:
                 continue
-            elif output_string == 'CAP':
-                cap_state = True
             elif output_string == 'DEL':
                 if text_entered == '':
                     continue
                 else:
                     text_entered = text_entered[:-1]
             else:
-                if not cap_state:
-                    text_entered += output_string
-                else:
-                    text_entered += output_string.upper()
-                    cap_state = False
+                text_entered += output_string
 
-            tail = '.PNG' if cap_state else '.png'
-            state_png_name = "state" + str(gesture.state) + tail
-            graph.DrawImage(filename=state_png_name, location=(0, graph_size[1]))
+
         window['-OUTPUT-'].update(text_entered)
         # Gesture.swipeDetect(output_gesture[0], output_gesture[1])
     window.close()
