@@ -117,9 +117,10 @@ def main():
               [sg.Text('Word Count:'), sg.Text(size=(3,1), key='-WORDCOUNT-')],
               [sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
                         enable_events=True, drag_submits=True, key="-GRAPH-", change_submits=True,
-                        background_color='lightblue')]]
+                        background_color='lightblue')],
+              [sg.Button('Count'), sg.Button('End')]]
 
-    window = sg.Window(title="User Input", layout=layout)
+    window = sg.Window(title="Fig Binger", layout=layout)
     window.finalize()
     graph = window["-GRAPH-"]
 
@@ -138,6 +139,8 @@ def main():
         # this block processes the motion
         event, values = window.read()
 
+        if event == sg.WIN_CLOSED or event == 'End':
+            break
         if event is None:
             break
         if event == "-GRAPH-":
@@ -149,6 +152,8 @@ def main():
                 lastxy = x, y
             else:
                 end_point = (x, y)
+        if event == 'Count':
+            window['-WORDCOUNT-'].update(len(text_entered.split()))
         elif event.endswith('+UP'):  # The drawing has ended because mouse up
 
             # info = window["info"]
