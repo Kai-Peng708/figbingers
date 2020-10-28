@@ -51,7 +51,7 @@ class Gesture:
         swipe_command = self.swipeDetect(start, end)
 
         if swipe_command is None:
-            print('the fuck is this')
+            print('unknown command')
         elif swipe_command in self.state_map.keys():
             self.state = self.state_map[swipe_command]
         elif swipe_command == "L":
@@ -109,17 +109,20 @@ def main():
     # print(sg.Window.get_screen_size())
     # w, h = sg.Window.get_screen_size()
 
-    screen_size = (50, 50)
+    interactive_size = (100, 100)
     graph_size = (800, 800)
     layout = [[sg.Text('Text Entry:'), sg.Text(size=(150, 1), key='-OUTPUT-')],
               [sg.Text('Word Count:'), sg.Text(size=(3,1), key='-WORDCOUNT-')],
               [sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
-                        enable_events=True, drag_submits=True, key="-GRAPH-", change_submits=True,
+                        key="-GRAPH-", background_color='lightblue')],
+              [sg.Graph(canvas_size=interactive_size, graph_bottom_left=(0, 0), graph_top_right=interactive_size,
+                        enable_events=True, drag_submits=True, key="-INTER-", change_submits=True,
                         background_color='lightblue')]]
 
     window = sg.Window(title="User Input", layout=layout)
     window.finalize()
     graph = window["-GRAPH-"]
+    interactive_graph = window["-INTER-"]
 
     graph.DrawImage(filename="lowercase_state0.png", location=(0, graph_size[1]))
 
@@ -138,13 +141,12 @@ def main():
 
         if event is None:
             break
-        if event == "-GRAPH-":
-            x, y = values["-GRAPH-"]
+        if event == "-INTER-":
+            x, y = values["-INTER-"]
             if not dragging:
                 start_point = (x, y)
                 dragging = True
-                drag_figures = graph.get_figures_at_location((x, y))
-                lastxy = x, y
+
             else:
                 end_point = (x, y)
         elif event.endswith('+UP'):  # The drawing has ended because mouse up
@@ -160,7 +162,7 @@ def main():
             prior_rect = None
 
             # return the segments
-            output_gesture = analyseGesture(gesture_segment, graph_size)
+            output_gesture = analyseGesture(gesture_segment, interactive_size)
             print("start", output_gesture[0], "end", output_gesture[1])
 
             output_string = gesture.swipeTrigger(output_gesture[0], output_gesture[1])
