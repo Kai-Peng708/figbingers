@@ -1,4 +1,15 @@
 import PySimpleGUI as sg
+from PIL import Image
+import glob, os
+
+
+def batchProcessImages(windows_size=(100,100)):
+    # os.chdir("/mydir")
+    for file in glob.glob("*.png"):
+        im = Image.open(file)
+        im = im.resize(windows_size)
+        # print(file)
+        im.save("processed/"+file)
 
 
 class Gesture:
@@ -51,7 +62,7 @@ class Gesture:
         swipe_command = self.swipeDetect(start, end)
 
         if swipe_command is None:
-            print('the fuck is this')
+            print('unknown command')
         elif swipe_command in self.state_map.keys():
             self.state = self.state_map[swipe_command]
         elif swipe_command == "L":
@@ -111,20 +122,32 @@ def main():
     # print(sg.Window.get_screen_size())
     # w, h = sg.Window.get_screen_size()
 
-    screen_size = (50, 50)
+    interactive_size = (200, 200)
     graph_size = (800, 800)
     layout = [[sg.Text('Text Entry:'), sg.Text(size=(150, 1), key='-OUTPUT-')],
               [sg.Text('Word Count:'), sg.Text(size=(3,1), key='-WORDCOUNT-')],
-              [sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
-                        enable_events=True, drag_submits=True, key="-GRAPH-", change_submits=True,
+              # [sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
+              #           enable_events=True, drag_submits=True, key="-GRAPH-", change_submits=True,
+              #           background_color='lightblue')],
+
+              # [sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
+              #           key="-GRAPH-", background_color='lightblue')],
+              [sg.Graph(canvas_size=interactive_size, graph_bottom_left=(0, 0), graph_top_right=interactive_size,
+                        enable_events=True, drag_submits=True, key="-INTER-", change_submits=True,
                         background_color='lightblue')],
               [sg.Button('Count'), sg.Button('End')]]
 
     window = sg.Window(title="Fig Binger", layout=layout)
     window.finalize()
-    graph = window["-GRAPH-"]
+    # graph = window["-GRAPH-"]
+    interactive_graph = window["-INTER-"]
 
-    graph.DrawImage(filename="lowercase_state0.png", location=(0, graph_size[1]))
+    # process image before we load them
+    batchProcessImages(windows_size=interactive_size)
+
+
+
+    interactive_graph.DrawImage(filename="processed/" + "lowercase_state0.png", location=(0, interactive_size[1]))
 
     # ---===--- Loop taking in user input --- #
     dragging = False
@@ -143,13 +166,12 @@ def main():
             break
         if event is None:
             break
-        if event == "-GRAPH-":
-            x, y = values["-GRAPH-"]
+        if event == "-INTER-":
+            x, y = values["-INTER-"]
             if not dragging:
                 start_point = (x, y)
                 dragging = True
-                drag_figures = graph.get_figures_at_location((x, y))
-                lastxy = x, y
+
             else:
                 end_point = (x, y)
         if event == 'Count':
@@ -167,14 +189,14 @@ def main():
             prior_rect = None
 
             # return the segments
-            output_gesture = analyseGesture(gesture_segment, graph_size)
+            output_gesture = analyseGesture(gesture_segment, interactive_size)
             print("start", output_gesture[0], "end", output_gesture[1])
 
             output_string = gesture.swipeTrigger(output_gesture[0], output_gesture[1])
 
             name_prefix = "uppercase_" if gesture.use_caps else "lowercase_"
-            state_png_name = name_prefix + "state" + str(gesture.state) + ".png"
-            graph.DrawImage(filename=state_png_name, location=(0, graph_size[1]))
+            state_png_name = "processed/" + name_prefix + "state" + str(gesture.state) + ".png"
+            interactive_graph.DrawImage(filename=state_png_name, location=(0, interactive_size[1]))
 
             if output_string is None:
                 continue
