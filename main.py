@@ -123,7 +123,7 @@ def main():
     window.finalize()
     graph = window["-GRAPH-"]
 
-    graph.DrawImage(filename="state0.png", location=(0, graph_size[1]))
+    graph.DrawImage(filename="lowercase_state0.png", location=(0, graph_size[1]))
 
     # ---===--- Loop taking in user input --- #
     dragging = False
@@ -167,8 +167,8 @@ def main():
 
             output_string = gesture.swipeTrigger(output_gesture[0], output_gesture[1])
 
-            tail = '.PNG' if gesture.use_caps else '.png'
-            state_png_name = "state" + str(gesture.state) + tail
+            name_prefix = "uppercase_" if gesture.use_caps else "lowercase_"
+            state_png_name = name_prefix + "state" + str(gesture.state) + ".png"
             graph.DrawImage(filename=state_png_name, location=(0, graph_size[1]))
 
             if output_string is None:
