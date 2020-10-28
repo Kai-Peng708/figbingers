@@ -1,4 +1,15 @@
 import PySimpleGUI as sg
+from PIL import Image
+import glob, os
+
+
+def batchProcessImages(windows_size=(100,100)):
+    # os.chdir("/mydir")
+    for file in glob.glob("*.png"):
+        im = Image.open(file)
+        im = im.resize(windows_size)
+        # print(file)
+        im.save("processed/"+file)
 
 
 class Gesture:
@@ -113,18 +124,23 @@ def main():
     graph_size = (800, 800)
     layout = [[sg.Text('Text Entry:'), sg.Text(size=(150, 1), key='-OUTPUT-')],
               [sg.Text('Word Count:'), sg.Text(size=(3,1), key='-WORDCOUNT-')],
-              [sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
-                        key="-GRAPH-", background_color='lightblue')],
+              # [sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
+              #           key="-GRAPH-", background_color='lightblue')],
               [sg.Graph(canvas_size=interactive_size, graph_bottom_left=(0, 0), graph_top_right=interactive_size,
                         enable_events=True, drag_submits=True, key="-INTER-", change_submits=True,
                         background_color='lightblue')]]
 
     window = sg.Window(title="User Input", layout=layout)
     window.finalize()
-    graph = window["-GRAPH-"]
+    # graph = window["-GRAPH-"]
     interactive_graph = window["-INTER-"]
 
-    graph.DrawImage(filename="lowercase_state0.png", location=(0, graph_size[1]))
+    # process image before we load them
+    batchProcessImages(windows_size=interactive_size)
+
+
+
+    interactive_graph.DrawImage(filename="processed/" + "lowercase_state0.png", location=(0, interactive_size[1]))
 
     # ---===--- Loop taking in user input --- #
     dragging = False
@@ -168,8 +184,8 @@ def main():
             output_string = gesture.swipeTrigger(output_gesture[0], output_gesture[1])
 
             name_prefix = "uppercase_" if gesture.use_caps else "lowercase_"
-            state_png_name = name_prefix + "state" + str(gesture.state) + ".png"
-            graph.DrawImage(filename=state_png_name, location=(0, graph_size[1]))
+            state_png_name = "processed/" + name_prefix + "state" + str(gesture.state) + ".png"
+            interactive_graph.DrawImage(filename=state_png_name, location=(0, interactive_size[1]))
 
             if output_string is None:
                 continue
