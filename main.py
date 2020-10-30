@@ -17,12 +17,12 @@ class Gesture:
         self.state = 0
         self.use_caps = False
         # vowels
-        self.state0dict = {'SW': 'u', 'SE': 'a', 'S': 'e', 'NW': 'i', 'N': 'CAP', 'NE': 'o'}
+        self.state0dict = {'SW': 'u', 'SE': 'a', 'S': 'e', 'NW': 'i', 'N': 'CAP', 'NE': 'o', 'UP': '?', 'DOWN': '!'}
         # rest of letters
-        self.state1dict = {'SW': 'h', 'SE': 'n', 'S': 't', 'NW': 'd', 'N': 'r', 'NE': 's'}
-        self.state2dict = {'SW': 'y', 'SE': 'c', 'S': 'l', 'NW': 'w', 'N': 'f', 'NE': 'm'}
-        self.state3dict = {'SW': 'k', 'SE': 'p', 'S': 'g', 'NW': 'x', 'N': 'e', 'NE': 'b'}
-        self.state4dict = {'SW': ',', 'SE': 'j', 'S': 'q', 'NW': ':', 'N': '\'', 'NE': 'z'}
+        self.state1dict = {'SW': 'h', 'SE': 'n', 'S': 't', 'NW': 'd', 'N': 'r', 'NE': 's', 'UP': '?', 'DOWN': '!'}
+        self.state2dict = {'SW': 'y', 'SE': 'c', 'S': 'l', 'NW': 'w', 'N': 'f', 'NE': 'm', 'UP': '?', 'DOWN': '!'}
+        self.state3dict = {'SW': 'k', 'SE': 'p', 'S': 'g', 'NW': 'x', 'N': 'e', 'NE': 'b', 'UP': '?', 'DOWN': '!'}
+        self.state4dict = {'SW': ',', 'SE': 'j', 'S': 'q', 'NW': ':', 'N': '\'', 'NE': 'z', 'UP': '?', 'DOWN': '!'}
         self.list_dict = [self.state0dict, self.state1dict, self.state2dict, self.state3dict, self.state4dict]
         self.state_map = {'DL': 2, 'UL': 1, 'DR': 4, 'UR': 3}
 
@@ -54,6 +54,10 @@ class Gesture:
             return "UL"
         elif (start == 8 and end == 6) or (start == 5 and end == 3) or (start == 2 and end == 0):
             return "L"
+        elif start == 1 and end == 7:
+            return "UP"
+        elif start == 7 and end == 1:
+            return "DOWN"
         else:
             return
 
@@ -122,7 +126,7 @@ def main():
     # print(sg.Window.get_screen_size())
     # w, h = sg.Window.get_screen_size()
 
-    interactive_size = (200, 200)
+    interactive_size = (600, 600)
     graph_size = (800, 800)
     layout = [[sg.Text('Text Entry:'), sg.Text(size=(150, 1), key='-OUTPUT-')],
               [sg.Text('Word Count:'), sg.Text(size=(3,1), key='-WORDCOUNT-')],
