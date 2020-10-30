@@ -17,12 +17,12 @@ class Gesture:
         self.state = 0
         self.use_caps = False
         # vowels
-        self.state0dict = {'SW': 'u', 'SE': 'a', 'S': 'e', 'NW': 'i', 'N': 'CAP', 'NE': 'o'}
+        self.state0dict = {'SW': 'u', 'SE': 'a', 'S': 'e', 'NW': 'i', 'N': 'CAP', 'NE': 'o', 'UP': '?', 'DOWN': '!'}
         # rest of letters
-        self.state1dict = {'SW': 'h', 'SE': 'n', 'S': 't', 'NW': 'd', 'N': 'r', 'NE': 's'}
-        self.state2dict = {'SW': 'y', 'SE': 'c', 'S': 'l', 'NW': 'w', 'N': 'f', 'NE': 'm'}
-        self.state3dict = {'SW': 'k', 'SE': 'p', 'S': 'g', 'NW': 'x', 'N': 'e', 'NE': 'b'}
-        self.state4dict = {'SW': ',', 'SE': 'j', 'S': 'q', 'NW': ':', 'N': '\'', 'NE': 'z'}
+        self.state1dict = {'SW': 'h', 'SE': 'n', 'S': 't', 'NW': 'd', 'N': 'r', 'NE': 's', 'UP': '?', 'DOWN': '!'}
+        self.state2dict = {'SW': 'y', 'SE': 'c', 'S': 'l', 'NW': 'w', 'N': 'f', 'NE': 'm', 'UP': '?', 'DOWN': '!'}
+        self.state3dict = {'SW': 'k', 'SE': 'p', 'S': 'g', 'NW': 'x', 'N': 'e', 'NE': 'b', 'UP': '?', 'DOWN': '!'}
+        self.state4dict = {'SW': ',', 'SE': 'j', 'S': 'q', 'NW': ':', 'N': '\'', 'NE': 'z', 'UP': '?', 'DOWN': '!'}
         self.list_dict = [self.state0dict, self.state1dict, self.state2dict, self.state3dict, self.state4dict]
         self.state_map = {'DL': 2, 'UL': 1, 'DR': 4, 'UR': 3}
 
@@ -54,6 +54,10 @@ class Gesture:
             return "UL"
         elif (start == 8 and end == 6) or (start == 5 and end == 3) or (start == 2 and end == 0):
             return "L"
+        elif start == 1 and end == 7:
+            return "UP"
+        elif start == 7 and end == 1:
+            return "DOWN"
         else:
             return
 
@@ -122,17 +126,22 @@ def main():
     # print(sg.Window.get_screen_size())
     # w, h = sg.Window.get_screen_size()
 
-    interactive_size = (200, 200)
+    interactive_size = (600, 600)
     graph_size = (800, 800)
     layout = [[sg.Text('Text Entry:'), sg.Text(size=(150, 1), key='-OUTPUT-')],
               [sg.Text('Word Count:'), sg.Text(size=(3,1), key='-WORDCOUNT-')],
               # [sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
+              #           enable_events=True, drag_submits=True, key="-GRAPH-", change_submits=True,
+              #           background_color='lightblue')],
+
+              # [sg.Graph(canvas_size=graph_size, graph_bottom_left=(0, 0), graph_top_right=graph_size,
               #           key="-GRAPH-", background_color='lightblue')],
               [sg.Graph(canvas_size=interactive_size, graph_bottom_left=(0, 0), graph_top_right=interactive_size,
                         enable_events=True, drag_submits=True, key="-INTER-", change_submits=True,
-                        background_color='lightblue')]]
+                        background_color='lightblue')],
+              [sg.Button('Count'), sg.Button('End')]]
 
-    window = sg.Window(title="User Input", layout=layout)
+    window = sg.Window(title="Fig Binger", layout=layout)
     window.finalize()
     # graph = window["-GRAPH-"]
     interactive_graph = window["-INTER-"]
@@ -157,6 +166,8 @@ def main():
         # this block processes the motion
         event, values = window.read()
 
+        if event == sg.WIN_CLOSED or event == 'End':
+            break
         if event is None:
             break
         if event == "-INTER-":
@@ -167,6 +178,8 @@ def main():
 
             else:
                 end_point = (x, y)
+        if event == 'Count':
+            window['-WORDCOUNT-'].update(len(text_entered.split()))
         elif event.endswith('+UP'):  # The drawing has ended because mouse up
 
             # info = window["info"]
