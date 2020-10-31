@@ -126,7 +126,7 @@ def main():
     # print(sg.Window.get_screen_size())
     # w, h = sg.Window.get_screen_size()
 
-    interactive_size = (600, 600)
+    interactive_size = (200, 200)
     graph_size = (800, 800)
     layout = [[sg.Text('Text Entry:'), sg.Text(size=(150, 1), key='-OUTPUT-')],
               [sg.Text('Word Count:'), sg.Text(size=(3,1), key='-WORDCOUNT-')],
